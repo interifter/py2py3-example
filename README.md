@@ -1,6 +1,8 @@
 # Minimal Example on Multi-Versioned Python Package Management
 
-This is a minimal (and incomplete) example on how to develop, build, package, and test a project that _requires_ python 2.7 support.
+This is a minimal (and currently incomplete) example on how to develop, build, package, and test a project that _requires_ python 2.7 support.
+
+This specifically attempts to adopt modern tools from python 3.10, and bolt on 2.7 support.
 
 If you are in this situation, I do not envy you.
 

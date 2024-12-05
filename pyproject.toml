@@ -8,7 +8,7 @@
 name = "py23client"
 version = "0.1.0"
 description = ""
-authors = ["Haberman, Zachary <zachary@intel.com>"]
+authors = ["interifter"]
 readme = "README.md"
 packages = [{include = "py23client", from = "src"}]
 

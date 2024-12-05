@@ -1,0 +1,21 @@
+# This is only for python 3.10+. Do not use this for python 2.7
+# If you get an error like
+# ERROR: Package u'py23client' requires a different Python: 2.7.18 not in '>=3.10'
+# Then you probably ran 'pip install -e .' in python 2.7
+# You need to see (and use) ./setup.py for that, you monster.
+
+[tool.poetry]
+name = "py23client"
+version = "0.1.0"
+description = ""
+authors = ["Haberman, Zachary <zachary@intel.com>"]
+readme = "README.md"
+packages = [{include = "py23client", from = "src"}]
+
+[tool.poetry.dependencies]
+python = ">=3.10"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

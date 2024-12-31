@@ -96,10 +96,10 @@ poetry run pytest
 
 ```bash
 pyenv global 2.7.18
-python -m virtualenv nvenv27
-source ~/.pyenv/versions/nvenv27/bin/activate
-python setup.py develop
+pyenv virtualenv nvenv27_py2py3-example
+pyenv activate nvenv27_py2py3-example
 pip install pytest pytest-cov
+python setup.py develop
 pytest tests/py27
 ```
 

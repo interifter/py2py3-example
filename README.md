@@ -8,7 +8,7 @@ If you are in this situation, I do not envy you.
 
 ## Contributing and Building
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) on all the details for local test, dev, and build
+See [CONTRIBUTING.md](./CONTRIBUTING) on all the details for local test, dev, and build
 
 ## Type Checking Python 2.7
 

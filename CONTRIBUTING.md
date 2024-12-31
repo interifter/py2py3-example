@@ -16,6 +16,8 @@
 - [Build](#build)
   - [Windows Package Build and Validation for `python` 3.10](#windows-package-build-and-validation-for-python-310)
   - [Windows Package Build and Validation for `python` 2.7](#windows-package-build-and-validation-for-python-27)
+  - [Linux Package Build and Validation for `python` 3.10](#linux-package-build-and-validation-for-python-310)
+  - [Linux Package Build and Validation for `python` 2.7](#linux-package-build-and-validation-for-python-27)
   - [Build on Windows (`python` 2.7 and 3.10)](#build-on-windows-python-27-and-310)
 
 
@@ -140,6 +142,28 @@ python -c "import py23client; print(py23client.__version__)"
 ```
 
 ### Windows Package Build and Validation for `python` 2.7
+
+```powershell
+wvenv27/Scripts/activate
+pip uninstall py23client -y
+python setup.py build bdist_wheel -d dist sdist -d dist
+pip install py23client --find-links dist/
+python -c "import py23client; print(py23client.__version__)"
+# should output 0.1.0
+```
+
+### Linux Package Build and Validation for `python` 3.10
+
+```powershell
+wvenv27/Scripts/activate
+pip uninstall py23client -y
+poetry build
+pip install py23client --find-links dist/
+python -c "import py23client; print(py23client.__version__)"
+# should output 0.1.0
+```
+
+### Linux Package Build and Validation for `python` 2.7
 
 ```powershell
 wvenv27/Scripts/activate

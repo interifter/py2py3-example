@@ -18,7 +18,11 @@
   - [Windows Package Build and Validation for `python` 2.7](#windows-package-build-and-validation-for-python-27)
   - [Linux Package Build and Validation for `python` 3.10](#linux-package-build-and-validation-for-python-310)
   - [Linux Package Build and Validation for `python` 2.7](#linux-package-build-and-validation-for-python-27)
-  - [Build on Windows (`python` 2.7 and 3.10)](#build-on-windows-python-27-and-310)
+  - [Build across Linux and Windows for `python` 2.7 and 3.10](#build-across-linux-and-windows-for-python-27-and-310)
+    - [Windows Build and Stash](#windows-build-and-stash)
+    - [Debian Build and Stash](#debian-build-and-stash)
+    - [Verify Windows](#verify-windows)
+    - [Verify Debian](#verify-debian)
 
 
 ## Warning
@@ -133,7 +137,7 @@ Also, if you're here, a reminder: **Do not do this unless you like to throw away
 ### Windows Package Build and Validation for `python` 3.10
 
 ```powershell
-wvenv27/Scripts/activate
+wvenv310/Scripts/activate
 pip uninstall py23client -y
 poetry build
 pip install py23client --find-links dist/
@@ -154,8 +158,8 @@ python -c "import py23client; print(py23client.__version__)"
 
 ### Linux Package Build and Validation for `python` 3.10
 
-```powershell
-wvenv27/Scripts/activate
+```bash
+pyenv activate nvenv310_py2py3-example
 pip uninstall py23client -y
 poetry build
 pip install py23client --find-links dist/
@@ -166,7 +170,7 @@ python -c "import py23client; print(py23client.__version__)"
 ### Linux Package Build and Validation for `python` 2.7
 
 ```powershell
-wvenv27/Scripts/activate
+pyenv activate nvenv27_py2py3-example
 pip uninstall py23client -y
 python setup.py build bdist_wheel -d dist sdist -d dist
 pip install py23client --find-links dist/
@@ -174,5 +178,69 @@ python -c "import py23client; print(py23client.__version__)"
 # should output 0.1.0
 ```
 
-### Build on Windows (`python` 2.7 and 3.10)
+### Build across Linux and Windows for `python` 2.7 and 3.10
 
+> This assumes you have two completely different workspaces
+
+#### Windows Build and Stash
+
+```powershell
+wvenv310/Scripts/activate
+poetry build
+wvenv27/Scripts/activate
+python setup.py build bdist_wheel -d dist sdist -d dist
+copy dist\* C:\temp\py23client\
+```
+
+#### Debian Build and Stash
+
+> We only build the python 2.7 wheel.
+> Everything else should be the same between the two (hopefully)
+
+```bash
+pyenv activate nvenv27_py2py3-example
+python setup.py build bdist_wheel -d dist
+cp dist/* /mnt/c/Temp/py23client/
+```
+
+#### Verify Windows
+
+```powershell
+C:\Python27\python.exe -m virtualenv py27new
+.\py27new\Scripts\activate
+pip install py23client --find-links C:\Temp\py23client
+# Should see 'Processing c:\temp\py23client\py23client-0.1.0-cp27-cp27m-win_amd64.whl' in the output
+python -c "from py23client import client; print(client.__file__)"
+# Should see something like:
+#   -c:1: UserWarning: DEPRECATION: Python 2.7 reached the end of its life on January 1st, 2020. Please upgrade to Python 3.
+#   C:\code\py2py3-example\py27new\lib\site-packages\py23client\v27\_27client.pyc
+deactivate
+C:\Python310\python.exe -m venv py310new
+.\py310new\Scripts\activate
+pip install py23client --find-links C:\Temp\py23client
+# Should see 'Processing c:\temp\py23client\py23client-0.1.0-py3-none-any.whl' in the output
+python -c "from py23client import client; print(client.__file__)"
+# Should see seomthing like 'C:\code\py2py3-example\py310new\lib\site-packages\py23client\v310\_310client.py'
+```
+
+#### Verify Debian
+
+```bash
+pyenv global 2.7.18
+pyenv virtualenv nvenv27_py2py3-new
+pyenv activate nvenv27_py2py3-new
+pip install py23client --find-links /mnt/c/Temp/py23client/
+# Should see 'Processing /mnt/c/Temp/py23client/py23client-0.1.0-cp27-cp27mu-linux_x86_64.whl' in the output
+python -c "from py23client import client; print(client.__file__)"
+# Should see something like:
+#   -c:1: UserWarning: DEPRECATION: Python 2.7 reached the end of its life on January 1st, 2020. Please upgrade to Python 3.
+#   /home/zachary/.pyenv/versions/nvenv27_py2py3-new/lib/python2.7/site-packages/py23client/v27/_27client.pyc
+pyenv deactivate
+pyenv global 3.10.16
+pyenv virtualenv nvenv310_py2py3-new
+pyenv activate nvenv310_py2py3-new
+pip install py23client --find-links /mnt/c/Temp/py23client/
+# Should see 'Processing /mnt/c/Temp/py23client/py23client-0.1.0-py3-none-any.whl' in the output
+python -c "from py23client import client; print(client.__file__)"
+# Should see something like '/home/zachary/.pyenv/versions/nvenv310_py2py3-new/lib/python3.10/site-packages/py23client/v310/_310client.py'
+```

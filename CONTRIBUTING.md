@@ -107,8 +107,8 @@ pytest tests/py27
 
 ```bash
 pyenv global 3.10.16
-python -m venv nvenv310
-source ~/.pyenv/versions/nvenv310/bin/activate
+pyenv virtualenv nvenv310_py2py3-example
+pyenv activate nvenv310_py2py3-example
 pip install poetry
 poetry install
 poetry run pytest

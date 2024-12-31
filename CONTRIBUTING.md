@@ -141,8 +141,6 @@ python -c "import py23client; print(py23client.__version__)"
 
 ### Windows Package Build and Validation for `python` 2.7
 
-> THIS IS FAILING
-
 ```powershell
 wvenv27/Scripts/activate
 pip uninstall py23client -y

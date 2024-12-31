@@ -38,7 +38,7 @@ We have some ugly Shim code to delete any existing tar.gz and replace it with
 import os
 import warnings
 import sys
-from setuptools import setup # type: ignore[import-untyped]
+from setuptools import setup, find_packages # type: ignore[import-untyped]
 #pylint: disable=import-error, no-name-in-module
 from wheel.bdist_wheel import bdist_wheel as _bdist_wheel # type: ignore[import-not-found]
 
@@ -59,11 +59,14 @@ warnings.warn(
 class Shim:
     """Shim class to ensure we're reading from the pyproject.toml"""
 
-    def __init__(self, name, version, old_name, new_name):
+    def __init__(self, name, version, url, author, author_email, old_name, new_name):
         self.name = name
         self.version = version
         self.old_name = old_name
         self.new_name = new_name
+        self.url = url
+        self.author = author
+        self.author_email = author_email
 
     @classmethod
     def load_from_pyproject(cls, old_name, new_name):
@@ -74,14 +77,20 @@ class Shim:
             lines = handle.readlines()
         name = ""
         version = ""
+        url = ""
+        author = ""
+        author_email = ""
 
         for line in lines:
             if line.startswith("name"):
                 name = line.split(" = ")[1].replace("\"", "").strip()
             elif line.startswith("version"):
                 version = line.split(" = ")[1].replace("\"", "").strip()
+            elif line.startswith("authors"):
+                author = "hardcoded"
+                author_email = "hardcoded@email.com"
         os.rename(old_name, new_name)
-        return cls(name, version, old_name, new_name)
+        return cls(name, version, url, author, author_email, old_name, new_name)
 
     @classmethod
     def load(cls):
@@ -94,6 +103,10 @@ class Shim:
 
         name = ""
         version = ""
+        url = ""
+        author = "hardcoded"
+        author_email = "hardcoded@email.com"
+
         # pylint: disable=unspecified-encoding
         with open("PKG-INFO", "r") as handle:
             lines = handle.readlines()
@@ -102,7 +115,7 @@ class Shim:
                 name = line.split(": ")[1].replace("\"", "").strip()
             elif line.startswith("Version"):
                 version = line.split(": ")[1].replace("\"", "").strip()
-        return cls(name, version, old_name, new_name)
+        return cls(name, version, url, author, author_email, old_name, new_name)
 
     def clean(self):
         """Remove tar.gz"""
@@ -125,6 +138,44 @@ class bdist_wheel(_bdist_wheel):
         _bdist_wheel.finalize_options(self)
         self.root_is_pure = False # pylint: disable=attribute-defined-outside-init
 
+root_dir = os.path.abspath(os.path.join(__file__, os.pardir))
+root_src_dir = os.path.join(root_dir, "src", "py23client")
+
+# Because we are customizing so many things, we are having a hard time
+#   using the built-in functions provided with setuptools
+# So, we created our own bespoke find_packages
+# If you have a better way to do this (like deleting this), please create a PR
+def find_my_packages(base_pkg_name = "", root = ""):
+    """Finds the packages we care about"""
+    packages = []
+    for file_name in os.listdir(root):
+        
+        path = os.path.join(root, file_name)
+        print("Searching " + path)
+        if os.path.isfile(path) and path.endswith("__init__.py"):
+            print("Found file: " + path)
+            parent = os.path.dirname(path)
+            package_name = os.path.basename(parent)
+            full_package_name = ""
+            if not base_pkg_name:
+                full_package_name = package_name
+            else:
+                full_package_name = base_pkg_name + "." + package_name
+            packages.append(full_package_name)
+            base_pkg_name = full_package_name
+            break
+
+    for file_name in os.listdir(root):
+        path = os.path.join(root, file_name)
+        print("Searching " + path)
+        if os.path.isdir(path):
+            
+            packages.extend(find_my_packages(base_pkg_name=base_pkg_name, root=path))
+    return packages
+    # TODO: properly build out package names
+# print(find_my_packages(root=root_src_dir))
+# sys.exit()
+
 shim = Shim.load()
 try:
 
@@ -132,10 +183,14 @@ try:
         python_requires="<3",
         name=shim.name,
         version=shim.version,
+        author=shim.author,
+        author_email=shim.author_email,
+        url=shim.url,
         install_requires=[
             'importlib-metadata',
         ],
         package_dir={"": "src"},
+        packages=find_my_packages(root=root_src_dir),
         classifiers = [
             "Programming Language :: Python",
             "Programming Language :: Python :: 2.7",

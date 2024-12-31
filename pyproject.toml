@@ -15,6 +15,15 @@ packages = [{include = "py23client", from = "src"}]
 [tool.poetry.dependencies]
 python = ">=3.10"
 
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.4"
+pytest-cov = "^6.0.0"
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+testpaths = ["tests/py310"]
+
+
 
 [build-system]
 requires = ["poetry-core"]

@@ -18,6 +18,10 @@ https://github.com/python/mypy/blob/4687cec37a2a28e477e0fcf7eb95d2701bea55eb/doc
 python2 -m virtualenv wvenv27
 wvenv27/Scripts/activate
 python setup.py develop
+# I noticed running the above step was failing, but it appears it successfully installs the client:
+# error: Couldn't find a setup script in c:\users\zhaberma\appdata\local\temp\easy_install-m3rrqp\importlib_metadata-8.5.0.tar.gz
+# And after running the below commands, the error does not reappear
+
 pip install pytest pytest-cov
 pytest tests/py27
 ```

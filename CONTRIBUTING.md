@@ -13,6 +13,10 @@
   - [`python` 3.10 for Windows](#python-310-for-windows)
   - [`python` 2.7 for Debian (Ubuntu)](#python-27-for-debian-ubuntu)
   - [`python` 3.10 for Debian (Ubuntu)](#python-310-for-debian-ubuntu)
+- [Build](#build)
+  - [Windows Package Build and Validation for `python` 3.10](#windows-package-build-and-validation-for-python-310)
+  - [Windows Package Build and Validation for `python` 2.7](#windows-package-build-and-validation-for-python-27)
+  - [Build on Windows (`python` 2.7 and 3.10)](#build-on-windows-python-27-and-310)
 
 
 ## Warning
@@ -113,3 +117,40 @@ pip install poetry
 poetry install
 poetry run pytest
 ```
+
+## Build
+
+> Assumes you have gone through Development Setup
+
+The build process is order-dependent.
+
+That is, it does not pass the transitive property vibe check, yo.
+
+Also, if you're here, a reminder: **Do not do this unless you like to throw away your time and money.**
+
+### Windows Package Build and Validation for `python` 3.10
+
+```powershell
+wvenv27/Scripts/activate
+pip uninstall py23client -y
+poetry build
+pip install py23client --find-links dist/
+python -c "import py23client; print(py23client.__version__)"
+# should output 0.1.0
+```
+
+### Windows Package Build and Validation for `python` 2.7
+
+> THIS IS FAILING
+
+```powershell
+wvenv27/Scripts/activate
+pip uninstall py23client -y
+python setup.py build bdist_wheel -d dist sdist -d dist
+pip install py23client --find-links dist/
+python -c "import py23client; print(py23client.__version__)"
+# should output 0.1.0
+```
+
+### Build on Windows (`python` 2.7 and 3.10)
+

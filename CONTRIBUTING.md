@@ -82,7 +82,7 @@ pyenv install 3.10
 
 ```powershell
 C:\python27\python -m virtualenv wvenv27
-wvenv\Scripts\activate
+wvenv27\Scripts\activate
 python setup.py develop
 # I noticed running the above step was failing, but it appears it successfully installs the client:
 # error: Couldn't find a setup script in c:\users\zhaberma\appdata\local\temp\easy_install-m3rrqp\importlib_metadata-8.5.0.tar.gz

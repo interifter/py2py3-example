@@ -88,8 +88,17 @@ python setup.py develop
 # error: Couldn't find a setup script in c:\users\zhaberma\appdata\local\temp\easy_install-m3rrqp\importlib_metadata-8.5.0.tar.gz
 # And after running the below commands, then rerunning the above command, the error does not reappear
 
-pip install pytest pytest-cov
+pip install pytest pytest-cov 
 pytest tests/py27
+pip install pylint==1.9.5 # Last version supporting Python 2.7
+pylint .\src\py23client\v27
+pip install isort==4.3.21 # Last version supporting Python 2.7
+isort -rc .\src\py23client\v27
+pip install autopep8==1.5.7
+# This version of autopep8 should be compatible with Python 2.7 and does not have the tomli dependency. If you install without specifying the version, you might run into:
+# ERROR: Could not find a version that satisfies the requirement tomli (from autopep8) (from versions: none)
+# ERROR: No matching distribution found for tomli (from autopep8)
+autopep8 --in-place --aggressive --aggressive --recursive .\src\py23client\v27
 ```
 
 ### `python` 3.10 for Windows

@@ -13,6 +13,7 @@
   - [`python` 3.10 for Windows](#python-310-for-windows)
   - [`python` 2.7 for Debian (Ubuntu)](#python-27-for-debian-ubuntu)
   - [`python` 3.10 for Debian (Ubuntu)](#python-310-for-debian-ubuntu)
+  - [Static Type Checking and Formatter](#static-type-checking-and-formatter)
 - [Build](#build)
   - [Windows Package Build and Validation for `python` 3.10](#windows-package-build-and-validation-for-python-310)
   - [Windows Package Build and Validation for `python` 2.7](#windows-package-build-and-validation-for-python-27)
@@ -94,18 +95,13 @@ pip install pylint==1.9.5 # Last version supporting Python 2.7
 pylint .\src\py23client\v27
 pip install isort==4.3.21 # Last version supporting Python 2.7
 isort -rc .\src\py23client\v27
-pip install autopep8==1.5.7
-# This version of autopep8 should be compatible with Python 2.7 and does not have the tomli dependency. If you install without specifying the version, you might run into:
-# ERROR: Could not find a version that satisfies the requirement tomli (from autopep8) (from versions: none)
-# ERROR: No matching distribution found for tomli (from autopep8)
-autopep8 --in-place --aggressive --aggressive --recursive .\src\py23client\v27
 ```
 
 ### `python` 3.10 for Windows
 
 ```powershell
 C:\python310\python -m venv wvenv310
-wvenv310/Scripts/activate
+wvenv310\Scripts\activate
 pip install poetry
 poetry install
 poetry run pytest
@@ -131,6 +127,22 @@ pyenv activate nvenv310_py2py3-example
 pip install poetry
 poetry install
 poetry run pytest
+```
+
+### Static Type Checking and Formatter
+> To use mypy as type checker and black as formatter for Python 2.7, you need Python 3.5 or later. To do so, create a separate virtualenv on python 3.10. 
+> 
+> This environment is suggested to be used solely for python2 code to avoid conflict of mypy version with the actual python 3 environment.
+
+```powershell
+C:\python310\python -m venv mypy-py2
+mypy-py2\Scripts\activate
+pip install mypy==0.910 "black[python2]"
+pip install typed-ast
+# run mypy on python 2 dir
+mypy --py2 .\src\py23client\v27
+# run black 
+black .\src\py23client\v27
 ```
 
 ## Build

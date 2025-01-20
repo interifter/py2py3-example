@@ -13,6 +13,7 @@
   - [`python` 3.10 for Windows](#python-310-for-windows)
   - [`python` 2.7 for Debian (Ubuntu)](#python-27-for-debian-ubuntu)
   - [`python` 3.10 for Debian (Ubuntu)](#python-310-for-debian-ubuntu)
+  - [Static Type Checking and Formatter](#static-type-checking-and-formatter)
 - [Build](#build)
   - [Windows Package Build and Validation for `python` 3.10](#windows-package-build-and-validation-for-python-310)
   - [Windows Package Build and Validation for `python` 2.7](#windows-package-build-and-validation-for-python-27)
@@ -82,21 +83,25 @@ pyenv install 3.10
 
 ```powershell
 C:\python27\python -m virtualenv wvenv27
-wvenv\Scripts\activate
+wvenv27\Scripts\activate
 python setup.py develop
 # I noticed running the above step was failing, but it appears it successfully installs the client:
 # error: Couldn't find a setup script in c:\users\zhaberma\appdata\local\temp\easy_install-m3rrqp\importlib_metadata-8.5.0.tar.gz
 # And after running the below commands, then rerunning the above command, the error does not reappear
 
-pip install pytest pytest-cov
+pip install pytest pytest-cov 
 pytest tests/py27
+pip install pylint==1.9.5 # Last version supporting Python 2.7
+pylint .\src\py23client\v27
+pip install isort==4.3.21 # Last version supporting Python 2.7
+isort -rc .\src\py23client\v27
 ```
 
 ### `python` 3.10 for Windows
 
 ```powershell
 C:\python310\python -m venv wvenv310
-wvenv310/Scripts/activate
+wvenv310\Scripts\activate
 pip install poetry
 poetry install
 poetry run pytest
@@ -122,6 +127,22 @@ pyenv activate nvenv310_py2py3-example
 pip install poetry
 poetry install
 poetry run pytest
+```
+
+### Static Type Checking and Formatter
+> To use mypy as type checker and black as formatter for Python 2.7, you need Python 3.5 or later. To do so, create a separate virtualenv on python 3.10. 
+> 
+> This environment is suggested to be used solely for python2 code to avoid conflict of mypy version with the actual python 3 environment.
+
+```powershell
+C:\python310\python -m venv mypy-py2
+mypy-py2\Scripts\activate
+pip install mypy==0.910 "black[python2]"
+pip install typed-ast
+# run mypy on python 2 dir
+mypy --py2 .\src\py23client\v27
+# run black 
+black .\src\py23client\v27
 ```
 
 ## Build
